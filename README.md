@@ -1,74 +1,151 @@
-# Azure Active Directory Lab — Windows Server Administration & Security
+
+# Azure Active Directory Lab
+### Windows Server Administration | Azure Infrastructure | PowerShell Automation | IT Support & Security
 
 ## Project Overview
 
-This project demonstrates the deployment and administration of an Active Directory environment hosted in Microsoft Azure. Using Windows Server 2022 and Windows 11 virtual machines, I configured a domain controller, managed domain users and computers, automated account creation with PowerShell, and performed common IT support and security troubleshooting tasks.
+This project documents the deployment and administration of a Windows Active Directory environment hosted in Microsoft Azure. I built a functional domain environment using Windows Server 2022 and Windows 11 Pro to practice the infrastructure, identity management, automation, and troubleshooting responsibilities commonly performed by IT support technicians and systems administrators.
 
-The lab simulates an enterprise IT environment where administrators manage employee identities, enforce account security policies, troubleshoot authentication issues, and monitor Windows security events.
+The environment consists of a Windows Server domain controller (`DC-1`) and a domain-joined Windows 11 workstation (`Client-1`). Throughout the lab, I configured Azure networking and DNS, installed Active Directory Domain Services, provisioned user accounts, automated employee creation with PowerShell, configured Group Policy account lockout settings, and investigated authentication failures through Windows Event Viewer.
+
+The project focuses on practical IT administration skills, including restoring employee access, troubleshooting login problems, managing account permissions, and understanding how Windows domain infrastructure supports business operations.
+
+## Key Accomplishments
+
+- Deployed a Windows Server 2022 domain controller and Windows 11 workstation in Microsoft Azure.
+- Configured a static private IP address, client DNS settings, and network connectivity.
+- Installed Active Directory Domain Services and created the `mydomain.com` domain.
+- Joined a Windows 11 workstation to the Active Directory domain.
+- Created organizational units, administrator accounts, and security group memberships.
+- Automated employee account provisioning using Windows PowerShell.
+- Configured and tested account lockout settings through Group Policy.
+- Practiced password resets, account unlocking, account disabling, and access restoration.
+- Investigated failed authentication attempts using Windows Event Viewer.
+- Documented the environment and troubleshooting procedures with 25 lab screenshots.
+
+## Table of Contents
+
+- [Project Overview](#project-overview)
+- [Key Accomplishments](#key-accomplishments)
+- [Technologies Used](#technologies-used)
+- [Lab Objectives](#lab-objectives)
+- [Network Architecture](#network-architecture)
+- [Lab Environment](#lab-environment)
+- [Project Phases](#project-phases)
+- [Phase 1 — Azure Infrastructure & Active Directory Deployment](#phase-1--azure-infrastructure--active-directory-deployment)
+- [Phase 2 — Active Directory User Administration & PowerShell Automation](#phase-2--active-directory-user-administration--powershell-automation)
+- [Phase 3 — Account Security, Troubleshooting & Event Monitoring](#phase-3--account-security-troubleshooting--event-monitoring)
+- [Troubleshooting Scenarios Completed](#troubleshooting-scenarios-completed)
+- [Skills Demonstrated](#skills-demonstrated)
+- [Security Considerations](#security-considerations)
+- [Project Outcomes](#project-outcomes)
+- [Conclusion](#conclusion)
+
+---
 
 ## Technologies Used
 
-- Microsoft Azure — Virtual Machines, Virtual Networks, and Network Interfaces
-- Windows Server 2022 — Domain Controller (DC-1)
-- Windows 11 Pro — Domain-Joined Workstation (Client-1)
-- Active Directory Domain Services (AD DS)
-- Active Directory Users and Computers (ADUC)
-- DNS
-- Group Policy Management Console (GPMC)
-- Windows PowerShell ISE
-- Windows Event Viewer
-- Remote Desktop Protocol (RDP)
+| Technology | Purpose |
+|---|---|
+| Microsoft Azure | Hosting virtual machines and networking resources |
+| Windows Server 2022 | Domain controller operating system |
+| Windows 11 Pro | Domain-joined client workstation |
+| Active Directory Domain Services | Centralized identity and domain management |
+| Active Directory Users and Computers | Managing users, computers, and groups |
+| DNS | Domain name resolution and domain controller discovery |
+| Group Policy Management Console | Configuring domain security policies |
+| Windows PowerShell ISE | Automating employee account creation |
+| Windows Event Viewer | Investigating authentication events |
+| Remote Desktop Protocol | Remote administration and workstation access |
 
 ## Lab Objectives
 
-1. Deploy and configure a Windows Server domain controller in Azure.
-2. Join a Windows 11 workstation to the Active Directory domain.
-3. Create and manage organizational units, domain users, and security groups.
-4. Automate bulk employee account creation using PowerShell.
-5. Configure account lockout policies through Group Policy.
-6. Troubleshoot locked and disabled user accounts.
-7. Investigate failed authentication attempts using Windows Event Viewer.
+1. Deploy and configure Windows Server and Windows 11 virtual machines in Azure.
+2. Establish network connectivity and configure DNS for Active Directory.
+3. Install Active Directory Domain Services and create a Windows domain.
+4. Join a Windows 11 workstation to the domain.
+5. Create and manage organizational units, users, computers, and security groups.
+6. Automate domain user provisioning with PowerShell.
+7. Configure and test account lockout policies.
+8. Troubleshoot locked and disabled user accounts.
+9. Investigate failed authentication attempts using Windows security logs.
+10. Document the environment and demonstrate practical IT support skills.
 
-## Project Phases
+---
 
-### Phase 1 — Azure Infrastructure & Active Directory Deployment
+## Network Architecture
 
-Deploy Azure virtual machines, configure networking and DNS, install Active Directory Domain Services, create a new forest, and join a Windows 11 workstation to the domain.
+The lab uses an Azure virtual network to connect a Windows Server domain controller and a Windows 11 client workstation.
 
-### Phase 2 — User Administration & PowerShell Automation
+The domain controller provides Active Directory authentication and DNS services. The Windows 11 workstation uses the domain controller's private IP address for DNS resolution and communicates with it to access domain services.
 
-Create administrative accounts, configure organizational units and security group memberships, manage Remote Desktop access, and automate employee account provisioning with PowerShell.
+```mermaid
+flowchart TB
+    Azure["Microsoft Azure"]
+    RG["Resource Group: Active-Directory-Lab"]
+    VNet["Virtual Network: Active-Directory-VNet"]
 
-### Phase 3 — Account Security & Troubleshooting
+    DC["DC-1 | Windows Server 2022<br/>Domain Controller + DNS<br/>Private IP: 10.0.0.4"]
+    Client["Client-1 | Windows 11 Pro<br/>Domain-Joined Workstation<br/>DNS Server: 10.0.0.4"]
 
-Configure Group Policy account lockout settings, simulate account lockouts, reset passwords, disable and re-enable user accounts, and investigate authentication failures using Windows Event Viewer.
+    Domain["Active Directory Domain<br/>mydomain.com"]
+
+    Azure --> RG
+    RG --> VNet
+    VNet --> DC
+    VNet --> Client
+    DC --> Domain
+    Client -->|"DNS Queries and Domain Authentication"| DC
+
+    classDef azure fill:#e8f2ff,stroke:#3976c5,color:#17365d
+    classDef server fill:#e8f5e9,stroke:#388e3c,color:#1b5e20
+    classDef client fill:#fff3e0,stroke:#f57c00,color:#7a4100
+
+    class Azure,RG,VNet azure
+    class DC,Domain server
+    class Client client
+```
+
+**Architecture Summary:**
+
+- **DC-1:** Windows Server 2022 virtual machine running Active Directory Domain Services and DNS.
+- **Client-1:** Windows 11 Pro workstation joined to `mydomain.com`.
+- **Private Networking:** Both virtual machines communicate over `Active-Directory-VNet`.
+- **DNS Configuration:** Client-1 uses DC-1's private IP address, `10.0.0.4`, for DNS.
+- **Centralized Authentication:** Domain users authenticate against Active Directory.
+
+The diagram illustrates the logical lab environment rather than a production-ready network security design.
 
 ## Lab Environment
 
 | Component | Configuration |
 |---|---|
 | Cloud Platform | Microsoft Azure |
-| Domain Controller | DC-1 — Windows Server 2022 |
-| Client Workstation | Client-1 — Windows 11 Pro |
-| Active Directory Domain | mydomain.com |
-| Virtual Network | Active-Directory-VNet |
 | Resource Group | Active-Directory-Lab |
+| Virtual Network | Active-Directory-VNet |
+| Domain Controller | DC-1 |
+| Domain Controller OS | Windows Server 2022 |
+| Domain Controller Private IP | 10.0.0.4 (Static) |
+| Client Workstation | Client-1 |
+| Client OS | Windows 11 Pro |
+| Active Directory Domain | mydomain.com |
 | Employee Organizational Unit | _EMPLOYEES |
 | Administrator Organizational Unit | _ADMINS |
+| Administrative Test Account | jane_admin |
 
-## Skills Demonstrated
+## Project Phases
 
-- Windows Server administration
-- Active Directory user and computer management
-- DNS and network troubleshooting
-- PowerShell scripting and automation
-- Group Policy configuration
-- Account provisioning and access management
-- Password resets and account lockout troubleshooting
-- Windows security event log analysis
-- Remote Desktop configuration
-- IT support troubleshooting and documentation
+### Phase 1 — Azure Infrastructure & Active Directory Deployment
 
+Deploy the Azure resource group, virtual network, and virtual machines. Configure the domain controller's static private IP address, client DNS settings, and network connectivity. Install Active Directory Domain Services and promote Windows Server to a domain controller.
+
+### Phase 2 — Active Directory User Administration & PowerShell Automation
+
+Create organizational units and administrative accounts, configure security group membership, join the Windows 11 workstation to the domain, manage Remote Desktop permissions, and automate employee account creation using PowerShell.
+
+### Phase 3 — Account Security, Troubleshooting & Event Monitoring
+
+Configure account lockout settings through Group Policy, simulate failed authentication attempts, unlock and reset user accounts, disable and re-enable accounts, and investigate authentication failures through Windows Event Viewer.
 
 ---
 
@@ -76,9 +153,11 @@ Configure Group Policy account lockout settings, simulate account lockouts, rese
 
 ### 1. Create the Azure Resource Group
 
-I began by creating a resource group named `Active-Directory-Lab` in Microsoft Azure. This resource group served as a centralized location for organizing and managing the infrastructure required for the lab.
+I began by creating a resource group named `Active-Directory-Lab` in Microsoft Azure.
 
-**Purpose:** Resource groups allow administrators to organize related Azure resources and manage their lifecycle.
+The resource group provided a centralized location for organizing and managing the infrastructure required for the Active Directory environment.
+
+**Purpose:** Azure resource groups allow administrators to organize related resources and manage their lifecycle.
 
 ![Azure Resource Group](screenshots/01-resource-group.png)
 
@@ -119,7 +198,6 @@ I configured the network interface associated with `DC-1` to use a static privat
 **Purpose:** Assigning a static private IP ensures that the domain controller maintains a consistent network address for DNS resolution and domain authentication.
 
 ![Domain Controller Static Private IP](screenshots/05-dc-static-private-ip.png)
-
 
 ### 6. Configure Client DNS Settings
 
@@ -309,6 +387,8 @@ These settings were used to simulate an organization's password security control
 
 **Purpose:** Account lockout policies help protect user accounts against repeated unauthorized password attempts.
 
+**Technical Note:** Domain account lockout settings must be configured in an effective domain-level password policy to apply correctly to domain accounts. Organizational unit policies alone do not establish the domain-wide account lockout policy.
+
 ![Account Lockout Group Policy](screenshots/19-account-lockout-group-policy.png)
 
 ### 20. Simulate a Domain User Account Lockout
@@ -387,6 +467,8 @@ Windows security logs provide valuable information for diagnosing authentication
 
 **Purpose:** Event log analysis helps IT support and security teams investigate failed logins, identify authentication problems, and understand user activity.
 
+**Technical Note:** Windows Security Event ID `4625` represents a failed logon. Event ID `4740` represents a user account lockout and is typically investigated on a domain controller. These event IDs are useful references for future troubleshooting.
+
 ![Event Viewer Failed Logon Attempts](screenshots/25-event-viewer-failed-logons.png)
 
 ---
@@ -395,46 +477,88 @@ Windows security logs provide valuable information for diagnosing authentication
 
 Throughout this lab, I practiced several common IT support scenarios:
 
-| Scenario | Troubleshooting Action |
-|---|---|
-| Domain connectivity | Tested communication between the client and domain controller using ping |
-| DNS configuration | Verified the client's configured DNS server using `ipconfig /all` |
-| Domain authentication | Joined a Windows 11 workstation to Active Directory and tested user sign-in |
-| User provisioning | Automated employee account creation using PowerShell |
-| Locked user account | Reset the password, unlocked the account, and verified access |
-| Disabled user account | Confirmed login denial, re-enabled the account, and restored access |
-| Failed authentication | Reviewed Windows event logs to investigate failed login attempts |
+| Scenario | Troubleshooting Action | Result |
+|---|---|---|
+| Network connectivity | Tested communication using `ping` | Verified client-to-server connectivity |
+| DNS configuration | Inspected settings using `ipconfig /all` | Confirmed the configured DNS server |
+| Domain authentication | Joined Client-1 to Active Directory | Verified domain membership |
+| User provisioning | Executed a PowerShell user creation script | Created and verified employee accounts |
+| Locked user account | Reset password and unlocked account | Restored user access |
+| Disabled user account | Disabled account and attempted login | Confirmed authentication was blocked |
+| Account reactivation | Re-enabled account and tested login | Restored authentication |
+| Failed authentication | Reviewed Windows event logs | Identified failed login activity |
 
-## Security Considerations
+## Skills Demonstrated
 
-This project was completed in an isolated Microsoft Azure lab environment for educational purposes.
+### Cloud Infrastructure & Networking
 
-Several configurations were used to simplify testing and should be hardened before implementing a similar environment in production:
+- Microsoft Azure virtual machine deployment
+- Azure resource group and virtual network configuration
+- Static private IP configuration
+- DNS configuration and troubleshooting
+- Client-to-server network connectivity testing
+- Remote Desktop administration
 
-- Restrict Remote Desktop access to authorized users and administrators.
-- Apply least-privilege principles to privileged accounts and security groups.
-- Keep Windows Defender Firewall enabled with appropriate rules.
-- Restrict inbound access through Azure Network Security Groups.
-- Avoid exposing domain controllers directly to the public internet.
-- Use strong, unique passwords and secure credential management.
-- Apply account lockout policies based on organizational security requirements.
-- Review Windows security logs regularly.
-- Remove or deallocate unused Azure lab resources to reduce costs and exposure.
+### Windows Server & Active Directory
+
+- Windows Server 2022 administration
+- Active Directory Domain Services deployment
+- Domain controller configuration
+- Organizational unit management
+- Domain user and computer administration
+- Security group membership management
+- Windows workstation domain joining
+
+### PowerShell & Automation
+
+- Windows PowerShell ISE
+- Automated employee account provisioning
+- Script execution and administrative automation
+- Verification of automatically created directory objects
+
+### IT Support & Security Troubleshooting
+
+- User account creation and management
+- Password resets
+- Account unlocking
+- Account disabling and re-enabling
+- Remote Desktop access troubleshooting
+- Group Policy account lockout configuration
+- Windows Event Viewer analysis
+- Authentication troubleshooting
+- Technical documentation
+
+---
 
 ## Project Outcomes
 
 By completing this lab, I gained practical experience with Microsoft Azure, Windows Server, Active Directory, PowerShell, and Windows security administration.
 
-I successfully deployed a domain environment, configured a domain-joined workstation, provisioned employee accounts, managed access permissions, implemented account lockout settings, and troubleshot authentication issues.
+I successfully:
 
-The project demonstrates foundational skills relevant to IT Support, Help Desk, Desktop Support, Junior Systems Administration, and Identity and Access Management roles.
+- Deployed and configured a Windows domain environment in Azure.
+- Established communication between a domain controller and client workstation.
+- Configured DNS and verified network connectivity.
+- Created and managed Active Directory users, computers, and organizational units.
+- Automated employee account provisioning using PowerShell.
+- Configured account lockout settings and tested authentication behavior.
+- Troubleshot locked and disabled user accounts.
+- Restored access through password resets, unlocking, and account re-enablement.
+- Investigated failed login activity using Windows Event Viewer.
+
+This project demonstrates foundational skills relevant to:
+
+- IT Support Specialist
+- Help Desk Technician
+- Desktop Support Technician
+- Junior Systems Administrator
+- Active Directory Support Technician
+- Identity and Access Management Support
 
 ## Conclusion
 
-This Active Directory lab strengthened my understanding of how organizations manage user identities, computers, authentication, and security policies in a Windows domain environment.
+This Azure Active Directory lab strengthened my understanding of how organizations manage identities, computers, authentication, and security policies within Windows domain environments.
 
-It also provided hands-on practice with real-world IT support responsibilities, including account provisioning, password resets, account lockouts, access restoration, and security event log analysis.
+The project provided hands-on practice with real-world IT support responsibilities, including account provisioning, password resets, account lockouts, access restoration, DNS troubleshooting, and security event log analysis.
 
-The experience provides a foundation for further learning in Windows administration, Microsoft Azure, and cloud security.
-
-
+By combining Azure infrastructure, Windows Server administration, PowerShell automation, and Active Directory troubleshooting, I developed a stronger foundation for pursuing IT support, systems administration, and cloud security roles.
