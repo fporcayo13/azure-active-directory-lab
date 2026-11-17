@@ -58,19 +58,6 @@ The project focuses on practical IT administration skills, including restoring e
 | Windows Event Viewer | Investigating authentication events |
 | Remote Desktop Protocol | Remote administration and workstation access |
 
-## Lab Objectives
-
-1. Deploy and configure Windows Server and Windows 11 virtual machines in Azure.
-2. Establish network connectivity and configure DNS for Active Directory.
-3. Install Active Directory Domain Services and create a Windows domain.
-4. Join a Windows 11 workstation to the domain.
-5. Create and manage organizational units, users, computers, and security groups.
-6. Automate domain user provisioning with PowerShell.
-7. Configure and test account lockout policies.
-8. Troubleshoot locked and disabled user accounts.
-9. Investigate failed authentication attempts using Windows security logs.
-10. Document the environment and demonstrate practical IT support skills.
-
 ---
 
 ## Network Architecture
@@ -290,8 +277,6 @@ After configuring the account, I signed out of `DC-1` and signed back in using t
 
 **Purpose:** This exercise demonstrates user account creation, security group membership management, and privileged domain administration.
 
-**Security Note:** Domain Admins membership provides extensive privileges and should be restricted to authorized administrators. In production environments, administrators should use least-privilege access and separate privileged accounts from everyday user accounts.
-
 ![Domain Administrator Group Membership](screenshots/12-domain-admin-group-membership.png)
 
 ### 13. Join Windows 11 to the Active Directory Domain
@@ -326,8 +311,6 @@ This allowed me to test authentication using standard domain user accounts.
 
 **Purpose:** This exercise demonstrates how Windows administrators configure and troubleshoot remote access permissions for domain users.
 
-**Security Note:** Granting Remote Desktop access to all domain users was performed for testing purposes. In production environments, access should be limited to explicitly authorized users or security groups.
-
 ![Domain Users Remote Desktop Access](screenshots/15-domain-users-remote-desktop-access.png)
 
 ### 16. Automate Active Directory User Creation with PowerShell
@@ -342,8 +325,6 @@ The script created accounts within the `_EMPLOYEES` organizational unit.
 
 **Script Reference:**
 [Josh Madakor — Active Directory PowerShell User Creation Script](https://github.com/joshmadakor1/AD_PS/blob/master/Generate-Names-Create-Users.ps1)
-
-**Security Note:** The script was used in an isolated lab environment. Example passwords and credentials should never be reused in production or included in public repositories.
 
 ![PowerShell User Creation](screenshots/16-powershell-user-creation.png)
 
@@ -386,8 +367,6 @@ The lab used the following settings:
 These settings were used to simulate an organization's password security controls.
 
 **Purpose:** Account lockout policies help protect user accounts against repeated unauthorized password attempts.
-
-**Technical Note:** Domain account lockout settings must be configured in an effective domain-level password policy to apply correctly to domain accounts. Organizational unit policies alone do not establish the domain-wide account lockout policy.
 
 ![Account Lockout Group Policy](screenshots/19-account-lockout-group-policy.png)
 
@@ -466,8 +445,6 @@ I reviewed Windows event logs and identified failed authentication attempts asso
 Windows security logs provide valuable information for diagnosing authentication issues and investigating suspicious activity.
 
 **Purpose:** Event log analysis helps IT support and security teams investigate failed logins, identify authentication problems, and understand user activity.
-
-**Technical Note:** Windows Security Event ID `4625` represents a failed logon. Event ID `4740` represents a user account lockout and is typically investigated on a domain controller. These event IDs are useful references for future troubleshooting.
 
 ![Event Viewer Failed Logon Attempts](screenshots/25-event-viewer-failed-logons.png)
 
