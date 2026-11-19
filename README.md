@@ -10,26 +10,10 @@ The environment consists of a Windows Server domain controller (`DC-1`) and a do
 
 The project focuses on practical IT administration skills, including restoring employee access, troubleshooting login problems, managing account permissions, and understanding how Windows domain infrastructure supports business operations.
 
-## Key Accomplishments
-
-- Deployed a Windows Server 2022 domain controller and Windows 11 workstation in Microsoft Azure.
-- Configured a static private IP address, client DNS settings, and network connectivity.
-- Installed Active Directory Domain Services and created the `mydomain.com` domain.
-- Joined a Windows 11 workstation to the Active Directory domain.
-- Created organizational units, administrator accounts, and security group memberships.
-- Automated employee account provisioning using Windows PowerShell.
-- Configured and tested account lockout settings through Group Policy.
-- Practiced password resets, account unlocking, account disabling, and access restoration.
-- Investigated failed authentication attempts using Windows Event Viewer.
-- Documented the environment and troubleshooting procedures with 25 lab screenshots.
-
 ## Table of Contents
 
 - [Project Overview](#project-overview)
-- [Key Accomplishments](#key-accomplishments)
 - [Technologies Used](#technologies-used)
-- [Lab Objectives](#lab-objectives)
-- [Network Architecture](#network-architecture)
 - [Lab Environment](#lab-environment)
 - [Project Phases](#project-phases)
 - [Phase 1 — Azure Infrastructure & Active Directory Deployment](#phase-1--azure-infrastructure--active-directory-deployment)
@@ -37,7 +21,6 @@ The project focuses on practical IT administration skills, including restoring e
 - [Phase 3 — Account Security, Troubleshooting & Event Monitoring](#phase-3--account-security-troubleshooting--event-monitoring)
 - [Troubleshooting Scenarios Completed](#troubleshooting-scenarios-completed)
 - [Skills Demonstrated](#skills-demonstrated)
-- [Security Considerations](#security-considerations)
 - [Project Outcomes](#project-outcomes)
 - [Conclusion](#conclusion)
 
@@ -59,49 +42,6 @@ The project focuses on practical IT administration skills, including restoring e
 | Remote Desktop Protocol | Remote administration and workstation access |
 
 ---
-
-## Network Architecture
-
-The lab uses an Azure virtual network to connect a Windows Server domain controller and a Windows 11 client workstation.
-
-The domain controller provides Active Directory authentication and DNS services. The Windows 11 workstation uses the domain controller's private IP address for DNS resolution and communicates with it to access domain services.
-
-```mermaid
-flowchart TB
-    Azure["Microsoft Azure"]
-    RG["Resource Group: Active-Directory-Lab"]
-    VNet["Virtual Network: Active-Directory-VNet"]
-
-    DC["DC-1 | Windows Server 2022<br/>Domain Controller + DNS<br/>Private IP: 10.0.0.4"]
-    Client["Client-1 | Windows 11 Pro<br/>Domain-Joined Workstation<br/>DNS Server: 10.0.0.4"]
-
-    Domain["Active Directory Domain<br/>mydomain.com"]
-
-    Azure --> RG
-    RG --> VNet
-    VNet --> DC
-    VNet --> Client
-    DC --> Domain
-    Client -->|"DNS Queries and Domain Authentication"| DC
-
-    classDef azure fill:#e8f2ff,stroke:#3976c5,color:#17365d
-    classDef server fill:#e8f5e9,stroke:#388e3c,color:#1b5e20
-    classDef client fill:#fff3e0,stroke:#f57c00,color:#7a4100
-
-    class Azure,RG,VNet azure
-    class DC,Domain server
-    class Client client
-```
-
-**Architecture Summary:**
-
-- **DC-1:** Windows Server 2022 virtual machine running Active Directory Domain Services and DNS.
-- **Client-1:** Windows 11 Pro workstation joined to `mydomain.com`.
-- **Private Networking:** Both virtual machines communicate over `Active-Directory-VNet`.
-- **DNS Configuration:** Client-1 uses DC-1's private IP address, `10.0.0.4`, for DNS.
-- **Centralized Authentication:** Domain users authenticate against Active Directory.
-
-The diagram illustrates the logical lab environment rather than a production-ready network security design.
 
 ## Lab Environment
 
@@ -522,15 +462,6 @@ I successfully:
 - Troubleshot locked and disabled user accounts.
 - Restored access through password resets, unlocking, and account re-enablement.
 - Investigated failed login activity using Windows Event Viewer.
-
-This project demonstrates foundational skills relevant to:
-
-- IT Support Specialist
-- Help Desk Technician
-- Desktop Support Technician
-- Junior Systems Administrator
-- Active Directory Support Technician
-- Identity and Access Management Support
 
 ## Conclusion
 
